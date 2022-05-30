@@ -7,7 +7,7 @@ So far we have possible curriculum to pick: Slides, Videos, Instructions and COL
 
 1.  [tinyMLx](https://github.com/tinyMLx/courseware)   EDx course work [here](https://github.com/tinyMLx/courseware/tree/master/edX)  
 2.  [EdgeImpulse University](https://www.edgeimpulse.com/university) course work [here](https://github.com/edgeimpulse/courseware-embedded-machine-learning) Download the repository and extract the powerpoint files.
-3.  ...
+3.  [TinyML Harvard](http://tinyml.seas.harvard.edu/#full-courses)
 4.  ...
 
 
