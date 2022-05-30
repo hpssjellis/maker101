@@ -6,7 +6,7 @@ A more in depth look at Machine Learning for High School students or General Uni
 So far we have possible curriculum to pick: Slides, Videos, Instructions and COLABS from:
 
 1.  [tinyMLx](https://github.com/tinyMLx/courseware)   EDx course work [here](https://github.com/tinyMLx/courseware/tree/master/edX)  
-2.  [EdgeImpulse University](https://www.edgeimpulse.com/university) course work [here](https://github.com/edgeimpulse/courseware-embedded-machine-learning)
+2.  [EdgeImpulse University](https://www.edgeimpulse.com/university) course work [here](https://github.com/edgeimpulse/courseware-embedded-machine-learning) Download the repository and extract the powerpoint files.
 3.  ...
 4.  ...
 
