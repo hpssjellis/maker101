@@ -11,9 +11,9 @@ So far we have possible curriculum to pick: Slides, Videos, Instructions and COL
 
 Since these university tsyle courses should be platform, IDE, framework and hardware independent I will put the course work in relevant folders or links:
 
-Arduino-Portenta
+[Arduino-Portenta](https://github.com/hpssjellis/maker101/tree/main/arduino-portenta)
 
-Arduino-ML-Kit using the Nano33Ble [here](https://github.com/tinyMLx/arduino-library) at the tinyMLx github
+Arduino-ML-Kit using the Nano33Ble link [here](https://github.com/tinyMLx/arduino-library) at the tinyMLx github
 
 
 
