@@ -1,4 +1,4 @@
-# maker101
+# Maker101
 
 A more in depth look at Machine Learning for High School students or General University Undergrads who have completed [Maker100](https://github.com/hpssjellis/maker100)
 
