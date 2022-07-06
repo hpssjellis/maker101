@@ -1,8 +1,10 @@
+## EdgeImpulse WASM and WebSerial
+
+
 by Jeremy Ellis
 
-Started Jun 6th, 2022
-
-Use at your own risk!
+Started July 6th, 2022
+Use at your own Risk!
 
 
 Basic concept is to combine webSerial [here](https://hpssjellis.github.io/my-examples-of-arduino-webUSB-webSerial/public/webserial-and-polyfill.html)
