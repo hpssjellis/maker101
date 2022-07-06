@@ -8,8 +8,8 @@ As this is an advanced course teachersProfs could pick sections relevant to what
 
 The folders are:
 
-1. [edgeimpulse-keras-expert-sensor](https://github.com/hpssjellis/maker101/tree/main/edgeimpulse-keras-expert-sensor) Advanced EdgeImpulse Keras Expert Mode for Any Sensor
-2. [edgeimpulse-wasm-webserial](https://github.com/hpssjellis/maker101/tree/main/edgeimpulse-wasm-webserial)Advacned EdgeImpulse WASM with WebSerial, EdgeImpulse in the browser to a microcontroller (I use the $5 Seedstudio XIAO, but you could even use the Portenta)
+1. [edgeimpulse-keras-expert-mode-for-sensors](https://github.com/hpssjellis/maker101/tree/main/edgeimpulse-keras-expert-mode-for-sensors) Advanced EdgeImpulse Keras Expert Mode for Any Sensor
+2. [edgeimpulse-wasm-webserial](https://github.com/hpssjellis/maker101/tree/main/edgeimpulse-wasm-webserial) Advacned EdgeImpulse WASM with WebSerial, EdgeImpulse in the browser to a microcontroller (I use the $5 Seedstudio XIAO, but you could even use the Portenta)
 4. [software2-1](https://github.com/hpssjellis/maker101/tree/main/software2-1) Advanced After Classification Coding. The issues and possible solutions. I call this software 2.1
 5. [tensorflowjs-webserial](https://github.com/hpssjellis/maker101/tree/main/tensorflowjs-webserial) WebSerial with TensorflowJS: Connecting a Microcontroller ($5 Seedstudio XIAO) for actuators to an (old) Cell Phone running TensorflowJS in the Browser
  
