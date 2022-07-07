@@ -10,4 +10,4 @@ that students would use combined with EdgeImpulse.com university or TinyML4D
 
 
 Which sensors are available other than motion, sound and vision?
-1. 
+humidity, temperature, barometric, gesture, proximity, light color and light intensity sensor 
