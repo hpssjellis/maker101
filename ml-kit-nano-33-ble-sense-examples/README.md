@@ -2,7 +2,7 @@
 
 
 By Jeremy Ellis  
-Started July 6th, 2022  
+Started July 7th, 2022  
 Use at your own Risk!  
 
 These are examples using the Nano 33 Ble Sense that are not the standard: Acceleration, Sound and Vision
