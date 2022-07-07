@@ -17,6 +17,13 @@ Good video
 
 https://www.youtube.com/watch?v=7ZncQCU9H6w
 
+
+One of my multi-sensor videos for the Nano33ble sense
+
+https://www.youtube.com/watch?v=gNRIQ5clpkY
+
+
+
 Libraries
 
 LSM9DS1 - IMU (Accelerometer, gyroscope, magnetometer)  
