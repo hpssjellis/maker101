@@ -1,6 +1,6 @@
 # Arduino Portenta Maker101 Course
 
-By Keremy Ellis  
+By Jeremy Ellis  
 Started July 6th, 2022  
 Use at your own Risk!  
 
