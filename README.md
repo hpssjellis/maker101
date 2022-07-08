@@ -1,6 +1,6 @@
 # Maker101
 
-Started July 6th, 2022, hopefully ready for April 2023.
+Started July 6th, 2022, hopefully ready for April 2023 but may be an ongoing project!
 
 A more in depth look at Machine Learning for High School students or General University Undergrads who have completed [Maker100](https://github.com/hpssjellis/maker100). The Maker101 course uses Arduino C/C++ programming language and the old Arduino IDE (Could use Platform.io, the new Arduino IDE version 2.x or the Arduino Cloud Editor, each IDE has positives and negatives).
 
