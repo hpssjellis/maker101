@@ -1,3 +1,4 @@
+
 /*
  * 
  * updated Feb 22nd, 2021
@@ -57,12 +58,12 @@
  * The last one slows everything down for the serial monitor whil also showing selected
  * Plot raw data.*/
  
-#define SERIAL_PLOT_MP34DT05    (true)
+#define SERIAL_PLOT_MP34DT05    (true)   // for serial plotter
 #define SERIAL_PLOT_LSM9DS1     (true)
 #define SERIAL_PLOT_APDS9960    (true)
 #define SERIAL_PLOT_LPS22HB     (true)
 #define SERIAL_PLOT_HTS221      (true)
-#define SERIAL_MONITOR_AND_SLOW (false)
+#define SERIAL_MONITOR_AND_SLOW (false)   // make true to see on serial monitor
 
 
 
@@ -196,17 +197,16 @@ void setup()
 void loop()
 {
 
-
+   Serial.println("s a-x a-y a-z g-x g-y g-z m-x m-y m-z pres prox gesture R G B temp humid");
   // wait for PDM microphone samples to be read
   if (samplesRead) {   
      myAverageSound = 0;
      myTotalSounds = 0;
      myMappedSound = 0;
-
     // print samples to the serial monitor or plotter
 
     for (int i = 0; i < samplesRead; i++) {
-      //Serial.println(sampleBuffer[i]);
+    //  Serial.println(sampleBuffer[i]);   // prints all sound data
       myTotalSounds +=  sampleBuffer[i];
     }
     myAverageSound = (myTotalSounds / samplesRead);
@@ -235,29 +235,40 @@ void loop()
   if((newMillis - oldMillis) % 50)
   {
 #if (SERIAL_PLOT_MP34DT05 == true)
-   // Serial.printf("%d,", myAverageSound);
+    //Serial.printf("%d,", myAverageSound);
+    Serial.print(String(myAverageSound) + ",");
     
    //map(value, fromLow, fromHigh, toLow, toHigh)
    myMappedSound = map(myAverageSound, -1000, 1000, -100, 300);
-   Serial.printf("%d,", myMappedSound);    
+//   Serial.printf("%d,", myMappedSound);  
+    Serial.print(String(myMappedSound) + ",");  
 #endif
 
 #if (SERIAL_PLOT_LSM9DS1 == true)
-    Serial.printf("%f,%f,%f,", accelerometerX, accelerometerY, accelerometerZ);
-    Serial.printf("%f,%f,%f,", gyroscopeX, gyroscopeY, gyroscopeZ);
-    Serial.printf("%f,%f,%f,", magneticX, magneticY, magneticZ);
+    // Serial.printf("%f,%f,%f,", accelerometerX, accelerometerY, accelerometerZ);
+    Serial.print(String(accelerometerX, 2) + ","+String(accelerometerY, 2) + ","+String(accelerometerZ, 2) + ","); 
+     
+    // Serial.printf("%f,%f,%f,", gyroscopeX, gyroscopeY, gyroscopeZ);
+    Serial.print(String(gyroscopeX, 2) + ","+String(gyroscopeY, 2) + ","+String(gyroscopeZ, 2) + ","); 
+     
+    // Serial.printf("%f,%f,%f,", magneticX, magneticY, magneticZ);
+    Serial.print(String(magneticX, 2) + ","+String(magneticY, 2) + ","+String(magneticZ, 2) + ",");  
+    
 #endif
 
 #if (SERIAL_PLOT_APDS9960 == true)
-    Serial.printf("%f,", barometricPressure);
+//    Serial.printf("%f,", barometricPressure);
+    Serial.print(String(barometricPressure, 2) + ",");  
 #endif
 
 #if (SERIAL_PLOT_LPS22HB == true)
-    Serial.printf("%d,%d,%d,%d,%d,", proximity, gesture, colourR, colourG, colourB);
+//    Serial.printf("%d,%d,%d,%d,%d,", proximity, gesture, colourR, colourG, colourB);
+    Serial.print(String(proximity) + ","+String(gesture) + ","+String(colourR) + ","+String(colourG) + ","+String(colourB) + ",");  
 #endif
 
 #if (SERIAL_PLOT_HTS221 == true)
-    Serial.printf("%f, %f", temperature, humidity);
+//    Serial.print("%f, %f", temperature, humidity);
+    Serial.print(String(temperature, 2) + ","+String(humidity, 2));  // last one doesn't need a comma
 #endif
     Serial.println();
   }
@@ -305,7 +316,7 @@ void loop()
 
 // Slow it down and watch the monitor
 #if (SERIAL_MONITOR_AND_SLOW == true)
-  delay(4000);
+  delay(2000);
   Serial.println();
   Serial.println("------------------------------------------------------------");
   Serial.println("PDM microphone Average: " + String(myMappedSound));
