@@ -1,4 +1,3 @@
-
 /*
  * 
  * updated Feb 22nd, 2021
@@ -197,7 +196,7 @@ void setup()
 void loop()
 {
 
-   Serial.println("s a-x a-y a-z g-x g-y g-z m-x m-y m-z pres prox gesture R G B temp humid");
+   Serial.println("sound a-x a-y a-z g-x g-y g-z m-x m-y m-z pres prox gesture R G B temp humid");
   // wait for PDM microphone samples to be read
   if (samplesRead) {   
      myAverageSound = 0;
@@ -276,9 +275,9 @@ void loop()
   /* Every 1000ms get the pressure, temperature, and humidity data */
   if((newMillis - oldMillis) > 1000)
   {
-    barometricPressure = BARO.readPressure();
-    temperature = HTS.readTemperature();
-    humidity = HTS.readHumidity();
+    barometricPressure = BARO.readPressure()*-5;
+    temperature = HTS.readTemperature()*-10;
+    humidity = HTS.readHumidity()*-5;
     oldMillis = newMillis;
   }
 
@@ -287,36 +286,50 @@ void loop()
   if(IMU.accelerationAvailable())
   {
     IMU.readAcceleration(accelerometerX, accelerometerY, accelerometerZ);
+    accelerometerX = 9.8 *accelerometerX + 100;   // acceleration to Force F = gA = 9.8 *a
+    accelerometerY = 9.8 *accelerometerY + 200;  
+    accelerometerZ = 9.8 *accelerometerZ + 300;  
   }
   /* If new gyroscope data is available on the LSM9DS1 get the data.*/
   if(IMU.gyroscopeAvailable())
   {
     IMU.readGyroscope(gyroscopeX, gyroscopeY, gyroscopeZ);
+    gyroscopeX = 0.1 *gyroscopeX + 400; 
+    gyroscopeY = 0.1 *gyroscopeY + 500; 
+    gyroscopeZ = 0.1 *gyroscopeZ + 600; 
   }
   /* If new magnetic data is available on the LSM9DS1 get the data.*/
   if (IMU.magneticFieldAvailable())
   {
     IMU.readMagneticField(magneticX, magneticY, magneticZ);
+    magneticX = 0.5 * magneticX + 600; 
+    magneticY = 0.5 * magneticY + 700; 
+    magneticZ = 0.5 * magneticZ + 800; 
   }
   /* If new proximity data is available on the APDS9960 get the data.*/
   if (APDS.proximityAvailable())
   {
     proximity = APDS.readProximity();
+    proximity *= 3;
   }
   /* If new colour data is available on the APDS9960 get the data.*/
   if (APDS.colorAvailable())
   {
     APDS.readColor(colourR, colourG, colourB);
+    
+    colourR -= 200;
+    colourG -= 300;
+    colourB -= 400;
   }
   /* If new gesture data is available on the APDS9960 get the data.*/
   if (APDS.gestureAvailable())
   {
-    gesture = APDS.readGesture();
+    gesture = APDS.readGesture()*0.5;  // random number (5) to make it easier to see
   }
 
 // Slow it down and watch the monitor
 #if (SERIAL_MONITOR_AND_SLOW == true)
-  delay(2000);
+  delay(1000);
   Serial.println();
   Serial.println("------------------------------------------------------------");
   Serial.println("PDM microphone Average: " + String(myMappedSound));
