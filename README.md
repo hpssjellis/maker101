@@ -13,7 +13,7 @@ The folders are:
 3. [ml-kit-nano-33-ble-sense-examples](https://github.com/hpssjellis/maker101/tree/main/ml-kit-nano-33-ble-sense-examples) Examples that can be used with the Arduino ML Kit Nano33 Ble Sense that arn't the normal Motion, Sound, Vision Machine Learning examples, but use the other sensors: humidity, temperature, barometric, gesture, proximity, light color and light intensity sensor 
 4. [software2-1](https://github.com/hpssjellis/maker101/tree/main/software2-1) Advanced After Classification Coding. The issues and possible solutions. I call this software 2.1
 5. [tensorflowjs-webserial](https://github.com/hpssjellis/maker101/tree/main/tensorflowjs-webserial) WebSerial with TensorflowJS: Connecting a Microcontroller ($5 Seedstudio XIAO) for actuators to an (old) Cell Phone running TensorflowJS in the Browser
-6.[visual-coding](https://github.com/hpssjellis/maker101/blob/main/visual-coding/README.md)  Visual coding, examples and how to do it, Pros and Cons
+6.[visual-or-auto-ai-coding](https://github.com/hpssjellis/maker101/blob/main/visual-or-auto-ai-coding/README.md)  Visual coding, examples and how to do it, Pros and Cons
  
 
 
