@@ -59,3 +59,12 @@ keras.utils.plot_model(model, show_shapes=True)
 
 
 
+Switch of plans, just using acceleration or any raw keras model load these layers see if it compiles and then try to prune the netwro down to fit better on your device
+
+![image](https://user-images.githubusercontent.com/5605614/178207452-e64fb3c6-30ba-4957-9c84-c27b011c55cc.png)
+
+
+
+
+
+
