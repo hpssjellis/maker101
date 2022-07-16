@@ -28,12 +28,18 @@
 
 
 
+/* For APDS9960 Gesture, light, and proximity sensor */
+#include <Arduino_APDS9960.h>
 
-#include <Arduino_LSM9DS1.h>
+//#include <Arduino_LSM9DS1.h>
 
-#define CONVERT_G_TO_MS2    9.80665f
+//#define CONVERT_G_TO_MS2    9.80665f
 #define FREQUENCY_HZ        EI_CLASSIFIER_FREQUENCY
 #define INTERVAL_MS         (1000 / (FREQUENCY_HZ + 1))
+
+
+int proximity, gesture, colourR, colourG, colourB;
+
 
 static unsigned long last_interval_ms = 0;
 // to classify 1 frame of data you need EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE values
@@ -45,10 +51,30 @@ void setup() {
     Serial.begin(115200);
     Serial.println("Started");
 
-    if (!IMU.begin()) {
-        Serial.println("Failed to initialize IMU!");
-        while (1);
-    }
+  //  if (!IMU.begin()) {
+  //      Serial.println("Failed to initialize IMU!");
+  //      while (1);
+  //  }
+    
+
+  /* Set sensitivity from 0 to 100. Higher is more sensitive. In
+   * my experience it requires quite a bit of experimentation to
+   * get this right, as if it is too sensitive gestures will always
+   * register as GESTURE_DOWN or GESTURE_UP and never GESTURE_LEFT or
+   * GESTURE_RIGHT. This can be called before APDS.begin() as it just
+   * sets an internal sensitivity value.*/
+  APDS.setGestureSensitivity(70);  // 0 to 100
+  if (!APDS.begin())
+  {
+    Serial.println("Error initializing APDS9960 sensor.");
+    /* Hacky way of stopping program executation in event of failure. */
+    while(1);
+  }
+  /* As per Arduino_APDS9960.h, 0=100%, 1=150%, 2=200%, 3=300%. Obviously more
+   * boost results in more power consumption. */
+  APDS.setLEDBoost(0);    
+    
+    
 }
 
 void loop() {
@@ -58,7 +84,7 @@ void loop() {
         last_interval_ms = millis();
 
         // read sensor data in exactly the same way as in the Data Forwarder example
-        IMU.readAcceleration(x, y, z);
+       // IMU.readAcceleration(x, y, z);
 
         // fill the features buffer
         features[feature_ix++] = x * CONVERT_G_TO_MS2;
