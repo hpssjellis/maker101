@@ -85,11 +85,11 @@ void loop() {
 
         // read sensor data in exactly the same way as in the Data Forwarder example
        // IMU.readAcceleration(x, y, z);
-
+  //  Serial.print(String(proximity) + ","+String(gesture) + ","+String(colourR) + ","+String(colourG) + ","+String(colourB) + ","); 
         // fill the features buffer
-        features[feature_ix++] = x * CONVERT_G_TO_MS2;
-        features[feature_ix++] = y * CONVERT_G_TO_MS2;
-        features[feature_ix++] = z * CONVERT_G_TO_MS2;
+        features[feature_ix++] = colourR * 1.0;  // to make it into a float
+        features[feature_ix++] = colourG * 1.0;
+        features[feature_ix++] = colourB * 1.0;
 
         // features buffer full? then classify!
         if (feature_ix == EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE) {
