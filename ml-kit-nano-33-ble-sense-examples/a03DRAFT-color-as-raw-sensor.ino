@@ -84,9 +84,13 @@ void loop() {
         last_interval_ms = millis();
 
         // read sensor data in exactly the same way as in the Data Forwarder example
-       // IMU.readAcceleration(x, y, z);
-  //  Serial.print(String(proximity) + ","+String(gesture) + ","+String(colourR) + ","+String(colourG) + ","+String(colourB) + ","); 
+        // IMU.readAcceleration(x, y, z);
+        //  Serial.print(String(proximity) + ","+String(gesture) + ","+String(colourR) + ","+String(colourG) + ","+String(colourB) + ","); 
         // fill the features buffer
+               
+        
+        APDS.readColor(colourR, colourG, colourB);
+
         features[feature_ix++] = colourR * 1.0;  // to make it into a float
         features[feature_ix++] = colourG * 1.0;
         features[feature_ix++] = colourB * 1.0;
