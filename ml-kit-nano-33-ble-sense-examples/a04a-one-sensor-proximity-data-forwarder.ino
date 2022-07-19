@@ -1,7 +1,11 @@
 // for proximity, gesture, colour
 #include <Arduino_APDS9960.h> 
 
-#define FREQUENCY_HZ        100    //  default 50
+// Using EdgeImpulse client (Note and Python3)  run
+//edge-impulse-data-forwarder --frequency 100
+
+
+#define FREQUENCY_HZ        50    // no point much higher
 #define INTERVAL_MS         (1000 / (FREQUENCY_HZ + 1))
 
 static unsigned long last_interval_ms = 0;
