@@ -1,7 +1,7 @@
 // for proximity, gesture, colour
 #include <Arduino_APDS9960.h> 
 
-#define FREQUENCY_HZ        50
+#define FREQUENCY_HZ        100    //  default 50
 #define INTERVAL_MS         (1000 / (FREQUENCY_HZ + 1))
 
 static unsigned long last_interval_ms = 0;
@@ -25,8 +25,10 @@ void loop() {
 
     if (millis() > last_interval_ms + INTERVAL_MS) {
        last_interval_ms = millis();
-       proximity = APDS.readProximity();
-       Serial.println(proximity);
+         if (APDS.proximityAvailable()){
+            proximity = 240 +(APDS.readProximity()*-1);  
+            Serial.println(proximity);
+         }
 
     }
 }
