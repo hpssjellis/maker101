@@ -19,169 +19,134 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+ 
 
 /* Includes ---------------------------------------------------------------- */
+
 //This is your RAW regression model made using EdgeImpulse.com
 #include <ei-proximity-v04_inferencing.h>
-//#include <Arduino_LSM9DS1.h>
+
+
+
+
+/* For APDS9960 Gesture, light, and proximity sensor */
 #include <Arduino_APDS9960.h>
-/* Constant defines -------------------------------------------------------- */
+
+//#include <Arduino_LSM9DS1.h>
+
 //#define CONVERT_G_TO_MS2    9.80665f
-#define MAX_ACCEPTED_RANGE  2.0f        // starting 03/2022, models are generated setting range to +-2, but this example use Arudino library which set range to +-4g. If you are using an older model, ignore this value and use 4.0f instead
+#define FREQUENCY_HZ        EI_CLASSIFIER_FREQUENCY
+#define INTERVAL_MS         (1000 / (FREQUENCY_HZ + 1))
+
 
 int proximity, gesture, colourR, colourG, colourB;
 
-/*
- ** NOTE: If you run into TFLite arena allocation issue.
- **
- ** This may be due to may dynamic memory fragmentation.
- ** Try defining "-DEI_CLASSIFIER_ALLOCATION_STATIC" in boards.local.txt (create
- ** if it doesn't exist) and copy this file to
- ** `<ARDUINO_CORE_INSTALL_PATH>/arduino/hardware/<mbed_core>/<core_version>/`.
- **
- ** See
- ** (https://support.arduino.cc/hc/en-us/articles/360012076960-Where-are-the-installed-cores-located-)
- ** to find where Arduino installs cores on your machine.
- **
- ** If the problem persists then there's not enough memory for this model and application.
- */
 
-/* Private variables ------------------------------------------------------- */
-static bool debug_nn = false; // Set this to true to see e.g. features generated from the raw signal
-static uint32_t run_inference_every_ms = 200;
-static rtos::Thread inference_thread(osPriorityLow);
-static float buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE] = { 0 };
-static float inference_buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];
+static unsigned long last_interval_ms = 0;
+// to classify 1 frame of data you need EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE values
+float features[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];
+// keep track of where we are in the feature array
+size_t feature_ix = 0;
 
-/* Forward declaration */
-void run_inference_background();
-
-/**
-* @brief      Arduino setup function
-*/
-void setup()
-{
-    // put your setup code here, to run once:
+void setup() {
     Serial.begin(115200);
-    Serial.println("Edge Impulse Inferencing Demo");
+    
+  pinMode(LED_BUILTIN, OUTPUT);
 
 
+  //  if (!IMU.begin()) {
+  //      Serial.println("Failed to initialize IMU!");
+  //      while (1);
+  //  }
+    
 
-
-    inference_thread.start(mbed::callback(&run_inference_background));
+  /* Set sensitivity from 0 to 100. Higher is more sensitive. In
+   * my experience it requires quite a bit of experimentation to
+   * get this right, as if it is too sensitive gestures will always
+   * register as GESTURE_DOWN or GESTURE_UP and never GESTURE_LEFT or
+   * GESTURE_RIGHT. This can be called before APDS.begin() as it just
+   * sets an internal sensitivity value.*/
+  APDS.setGestureSensitivity(70);  // 0 to 100
+  if (!APDS.begin())
+  {
+    Serial.println("Error initializing APDS9960 sensor.");
+    /* Hacky way of stopping program executation in event of failure. */
+    while(1);
+  }
+  /* As per Arduino_APDS9960.h, 0=100%, 1=150%, 2=200%, 3=300%. Obviously more
+   * boost results in more power consumption. */
+  APDS.setLEDBoost(3);    
+    
+    
 }
 
-/**
- * @brief Return the sign of the number
- * 
- * @param number 
- * @return int 1 if positive (or 0) -1 if negative
- */
-float ei_get_sign(float number) {
-    return (number >= 0.0) ? 1.0 : -1.0;
-}
+void loop() {
 
-/**
- * @brief      Run inferencing in the background.
- */
-void run_inference_background()
-{
-    // wait until we have a full buffer
-    delay((EI_CLASSIFIER_INTERVAL_MS * EI_CLASSIFIER_RAW_SAMPLE_COUNT) + 100);
+    if (millis() > last_interval_ms + INTERVAL_MS) {
+     last_interval_ms = millis();
+     digitalWrite(LED_BUILTIN, LOW);
 
-    // This is a structure that smoothens the output result
-    // With the default settings 70% of readings should be the same before classifying.
-    ei_classifier_smooth_t smooth;
-    ei_classifier_smooth_init(&smooth, 10 /* no. of readings */, 7 /* min. readings the same */, 0.8 /* min. confidence */, 0.3 /* max anomaly */);
-
-    while (1) {
-        // copy the buffer
-        memcpy(inference_buffer, buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE * sizeof(float));
-
-        // Turn the raw buffer in a signal which we can the classify
-        signal_t signal;
-        int err = numpy::signal_from_buffer(inference_buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, &signal);
-        if (err != 0) {
-            ei_printf("Failed to create signal from buffer (%d)\n", err);
-            return;
-        }
-
-        // Run the classifier
-        ei_impulse_result_t result = { 0 };
-
-        err = run_classifier(&signal, &result, debug_nn);
-        if (err != EI_IMPULSE_OK) {
-            ei_printf("ERR: Failed to run classifier (%d)\n", err);
-            return;
-        }
-
-        // print the predictions
-        ei_printf("Predictions ");
-        ei_printf("(DSP: %d ms., Classification: %d ms., Anomaly: %d ms.)",
-            result.timing.dsp, result.timing.classification, result.timing.anomaly);
-        ei_printf(": ");
-
-        // ei_classifier_smooth_update yields the predicted label
-        const char *prediction = ei_classifier_smooth_update(&smooth, &result);
-        ei_printf("%s ", prediction);
-        // print the cumulative results
-        ei_printf(" [ ");
-        for (size_t ix = 0; ix < smooth.count_size; ix++) {
-            ei_printf("%u", smooth.count[ix]);
-            if (ix != smooth.count_size + 1) {
-                ei_printf(", ");
-            }
-            else {
-              ei_printf(" ");
-            }
-        }
-        ei_printf("]\n");
-
-        delay(run_inference_every_ms);
-    }
-
-    ei_classifier_smooth_free(&smooth);
-}
-
-/**
-* @brief      Get data and run inferencing
-*
-* @param[in]  debug  Get debug info if true
-*/
-void loop()
-{
-    while (1) {
-        // Determine the next tick (and then sleep later)
-        uint64_t next_tick = micros() + (EI_CLASSIFIER_INTERVAL_MS * 1000);
-
-        // roll the buffer -3 points so we can overwrite the last one
-      //  numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -3);
-        numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -1);
-
-        // read to the end of the buffer
      if (APDS.proximityAvailable()){
-              proximity = 240 +(APDS.readProximity()*-1); 
+       // read sensor data in exactly the same way as in the Data Forwarder example
+       // IMU.readAcceleration(x, y, z);
+       //  Serial.print(String(proximity) + ","+String(gesture) + ","+String(colourR) + ","+String(colourG) + ","+String(colourB) + ","); 
+        proximity = 240 +(APDS.readProximity()*-1);  
+  
+        // fill the features buffer
+        features[feature_ix++] = proximity * 1.0;  // to make it into a float
+       // features[feature_ix++] = colourG * 1.0;
+       // features[feature_ix++] = colourB * 1.0;
 
-          //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 3],
-          //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 2],
-            buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1]
-        );
+        // features buffer full? then classify!
+        if (feature_ix == EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE) {
+            delay(100);
+            digitalWrite(LED_BUILTIN, HIGH);
+            //Serial.println(feature_ix);
+            //Serial.write(fb.getBuffer(), cam.frameSize());
+            //ei_printf(feature_ix);
+            //Serial.write(feature_ix, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE );
+            //Serial.print(feature_ix[0]);
+            delay(100);
+            ei_impulse_result_t result;
 
-       // for (int i = 0; i < 3; i++) {
-       // for (int i = 0; i < 1; i++) {  
-            if (fabs(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1]) > MAX_ACCEPTED_RANGE) {
-                buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = ei_get_sign(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE -1]) * MAX_ACCEPTED_RANGE;
+            // create signal from features frame
+            signal_t signal;
+            numpy::signal_from_buffer(features, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, &signal);
+
+            // run classifier
+            EI_IMPULSE_ERROR res = run_classifier(&signal, &result, true);
+           // ei_printf("run_classifier returned: %d\n", res);
+            //ei_printf("framesize: %d\n", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
+            if (res != 0) return;
+
+            // print predictions
+          //  ei_printf("Predictions (DSP: %d ms., Classification: %d ms., Anomaly: %d ms.): \n",
+           //     result.timing.dsp, result.timing.classification, result.timing.anomaly);
+
+            // print the predictions
+            for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
+                ei_printf("%s:\t%.5f\n", result.classification[ix].label, result.classification[ix].value);
             }
-       // }
+        #if EI_CLASSIFIER_HAS_ANOMALY == 1
+            ei_printf("anomaly:\t%.3f\n", result.anomaly);
+        #endif
 
-       // buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 3] *= CONVERT_G_TO_MS2;
-       // buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 2] *= CONVERT_G_TO_MS2;
-        buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = proximity
-
-        // and wait for next tick
-        uint64_t time_to_wait = next_tick - micros();
-        delay((int)floor((float)time_to_wait / 1000.0f));
-        delayMicroseconds(time_to_wait % 1000);
+            // reset features frame
+            feature_ix = 0;
+        }
     }
+  }  
 }
 
+void ei_printf(const char *format, ...) {
+    static char print_buf[1024] = { 0 };
+
+    va_list args;
+    va_start(args, format);
+    int r = vsnprintf(print_buf, sizeof(print_buf), format, args);
+    va_end(args);
+
+    if (r > 0) {
+        Serial.write(print_buf);
+    }
+}
