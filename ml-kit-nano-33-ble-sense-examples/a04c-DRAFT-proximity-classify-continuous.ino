@@ -24,10 +24,11 @@
 //This is your RAW regression model made using EdgeImpulse.com
 #include <ei-proximity-v04_inferencing.h>
 //#include <Arduino_LSM9DS1.h>
-#include <Arduino_APDS9960.h>
+c
 /* Constant defines -------------------------------------------------------- */
 //#define CONVERT_G_TO_MS2    9.80665f
-#define MAX_ACCEPTED_RANGE  2.0f        // starting 03/2022, models are generated setting range to +-2, but this example use Arudino library which set range to +-4g. If you are using an older model, ignore this value and use 4.0f instead
+//#define MAX_ACCEPTED_RANGE  2.0f        // starting 03/2022, models are generated setting range to +-2, but this example use Arudino library which set range to +-4g. If you are using an older model, ignore this value and use 4.0f instead
+#define MAX_ACCEPTED_RANGE  255.0f       
 
 int proximity, gesture, colourR, colourG, colourB;
 
@@ -47,8 +48,8 @@ int proximity, gesture, colourR, colourG, colourB;
  */
 
 /* Private variables ------------------------------------------------------- */
-static bool debug_nn = false; // Set this to true to see e.g. features generated from the raw signal
-static uint32_t run_inference_every_ms = 200;
+static bool debug_nn = true;  //false; // Set this to true to see e.g. features generated from the raw signal
+static uint32_t run_inference_every_ms = 2000;
 static rtos::Thread inference_thread(osPriorityLow);
 static float buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE] = { 0 };
 static float inference_buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];
@@ -65,7 +66,22 @@ void setup()
     Serial.begin(115200);
     Serial.println("Edge Impulse Inferencing Demo");
 
-
+  /* Set sensitivity from 0 to 100. Higher is more sensitive. In
+   * my experience it requires quite a bit of experimentation to
+   * get this right, as if it is too sensitive gestures will always
+   * register as GESTURE_DOWN or GESTURE_UP and never GESTURE_LEFT or
+   * GESTURE_RIGHT. This can be called before APDS.begin() as it just
+   * sets an internal sensitivity value.*/
+  APDS.setGestureSensitivity(70);  // 0 to 100
+  if (!APDS.begin())
+  {
+    Serial.println("Error initializing APDS9960 sensor.");
+    /* Hacky way of stopping program executation in event of failure. */
+    while(1);
+  }
+  /* As per Arduino_APDS9960.h, 0=100%, 1=150%, 2=200%, 3=300%. Obviously more
+   * boost results in more power consumption. */
+  APDS.setLEDBoost(0);   
 
 
     inference_thread.start(mbed::callback(&run_inference_background));
@@ -164,16 +180,16 @@ void loop()
      }
           //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 3],
           //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 2],
-            buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = proximity;
+            buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = proximity * 1.0f;
        // );
 
        // for (int i = 0; i < 3; i++) {
        // for (int i = 0; i < 1; i++) {  
 
             // hmmm, is this needed for raw data from other sensors?
-      //      if (fabs(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1]) > MAX_ACCEPTED_RANGE) {
-      //          buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = ei_get_sign(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE -1]) * MAX_ACCEPTED_RANGE;
-      //      }
+            if (fabs(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1]) > MAX_ACCEPTED_RANGE) {
+                buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = ei_get_sign(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE -1]) * MAX_ACCEPTED_RANGE;
+            }
        // }
 
        // buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 3] *= CONVERT_G_TO_MS2;
