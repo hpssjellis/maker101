@@ -24,7 +24,8 @@
 //This is your RAW regression model made using EdgeImpulse.com
 #include <ei-proximity-v04_inferencing.h>
 //#include <Arduino_LSM9DS1.h>
-c
+
+#include <Arduino_APDS9960.h>
 /* Constant defines -------------------------------------------------------- */
 //#define CONVERT_G_TO_MS2    9.80665f
 //#define MAX_ACCEPTED_RANGE  2.0f        // starting 03/2022, models are generated setting range to +-2, but this example use Arudino library which set range to +-4g. If you are using an older model, ignore this value and use 4.0f instead
