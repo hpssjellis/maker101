@@ -35,8 +35,9 @@
 //#define EI_SLICE 5  // this was just for testing
 
 
-
+int mySizeCalculation;
 int myDoublePosition = -1;
+int myDoubleCapture;
 int myMainPosition;
 long myCounter =0;
 int proximity, gesture, colourR, colourG, colourB;
@@ -63,6 +64,9 @@ static rtos::Thread inference_thread(osPriorityLow);
 static float buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE] = { 0 };
 static float inference_buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];
 static float doubleBuffer[EI_SLICE] = { 1, 2, 3 };
+
+float myGenericFloat = 239.00;
+int mySize = sizeof(myGenericFloat); 
 
 /* Forward declaration */
 void run_inference_background();
@@ -148,8 +152,19 @@ void run_inference_background()
 
         // ei_classifier_smooth_update yields the predicted label
         const char *prediction = ei_classifier_smooth_update(&smooth, &result);
-        ei_printf("%s ", prediction);
-        ei_printf("frame size %i", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
+        ei_printf("%s \n", prediction);
+        ei_printf("float size %i", mySize);
+        ei_printf(", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE %i", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
+        ei_printf(", EI_SLICE %i", EI_SLICE);
+        ei_printf(", myDoublePosition %i \n", myDoublePosition);
+        ei_printf(", myCounter %i", myCounter);
+        ei_printf(", myMainPosition from myDoubleCapture %i", myDoubleCapture);
+        ei_printf(", mySizeCalculation %i", mySizeCalculation);
+
+
+
+
+        
         // print the cumulative results
         ei_printf(" [ ");
         for (size_t ix = 0; ix < smooth.count_size; ix++) {
@@ -186,6 +201,9 @@ void loop()
              memcpy(buffer+myMainPosition, doubleBuffer, sizeof(doubleBuffer) ); 
              myMainPosition += EI_SLICE-1;
              if (myMainPosition > (EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - EI_SLICE) ) {  
+                myDoubleCapture = myMainPosition;
+                mySizeCalculation = mySize * (EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - myMainPosition);  // try -1 t0 see if last is zero
+                memcpy(buffer+myMainPosition, doubleBuffer, mySizeCalculation ); 
                 myMainPosition = 0;
                // it should really also send a classification then except that is on another thread
              }  
@@ -253,18 +271,3 @@ void loop()
     }
 }
 
-/*
-void ei_printf(const char *format, ...) {
-    static char print_buf[1024] = { 0 };
-
-    va_list args;
-    va_start(args, format);
-    int r = vsnprintf(print_buf, sizeof(print_buf), format, args);
-    va_end(args);
-
-    if (r > 0) {
-        Serial.write(print_buf);
-    }
-}
-
-*/
