@@ -28,20 +28,20 @@ Just a fun plotter program showing all the Senses on the Nano33BleSense, for whi
 
 
 2. [a02a-3axis-data-forwarder.ino](a02a-3axis-data-forwarder.ino)   
-  [a02b-3axis-acceleration-as-raw-sensors.ino](a02b-3axis-acceleration-as-raw-sensors.ino) 
+  [a02b-3axis-acceleration-as-raw-sensors.ino](a02b-3axis-acceleration-as-raw-sensors.ino)    
   Just getting the EdgeImpulse accelerometer as a raw sensor data forwarder and Classification working. An edgeimpulse model using the raw data would have to be made. This code using the accerlometer but is a bridge for using any raw sensor. 
 
 
 
 3. [a03a-color-data-forwarder.ino](a03a-color-data-forwarder.ino)   
-  [a03b-color-as-raw-sensor.ino](a03b-color-as-raw-sensor.ino)  
+  [a03b-color-as-raw-sensor.ino](a03b-color-as-raw-sensor.ino)     
   same as the accelerometer above but this time using raw color RGB data. Makes the transition to any 3 raw sensors.
 
 
 4. [a04a-one-sensor-proximity-data-forwarder.ino](a04a-one-sensor-proximity-data-forwarder.ino)  
   [a04b-one-sensor-proximity-classify.ino](a04b-one-sensor-proximity-classify.ino)  
   [a04c-single-buffer-proximity-classify-continuous.ino](a04c-single-buffer-proximity-classify-continuous.ino)  
-  [a04d-double-buffer-proximity-continuous.ino](a04d-double-buffer-proximity-continuous.ino)
+  [a04d-double-buffer-proximity-continuous.ino](a04d-double-buffer-proximity-continuous.ino)    
 Now using a single raw senosr this time the proximity sensor with an edgeimpulse regression raw model, measaure punch speeds (no units). 
 Then the classification gets more complex. a04b is regular,  a04c is continuous using a single buffer and a04d uses a double buffer.
 
