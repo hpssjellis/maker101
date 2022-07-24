@@ -39,7 +39,7 @@ int mySizeCalculation;
 int myDoublePosition = -1;
 int myDoubleCapture;
 int myMainPosition;
-long myCounter =0;
+long myCounter = 0;
 int proximity, gesture, colourR, colourG, colourB;
 
 /*
@@ -78,7 +78,7 @@ void setup()
 {
     // put your setup code here, to run once:
     Serial.begin(115200);
-    Serial.println("Edge Impulse Inferencing Demo");
+   // Serial.println("Edge Impulse Inferencing Demo");
 
 
   APDS.setGestureSensitivity(70);  // 0 to 100
@@ -193,22 +193,29 @@ void loop()
 {
     while (1) {
 
-          myCounter +=1;  // just testing if doubleBuffer gets updated
-          myDoublePosition +=1;
+
+               myDoublePosition +=1;
           // If double Buffer finished then update buffer
           if (myDoublePosition > EI_SLICE) { 
              myDoublePosition = -1;
              memcpy(buffer+myMainPosition, doubleBuffer, sizeof(doubleBuffer) ); 
              myMainPosition += EI_SLICE-1;
+
+             // If near the end of the main buffer and a few spots left, calculate the size and fill those few spots
              if (myMainPosition > (EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - EI_SLICE) ) {  
                 myDoubleCapture = myMainPosition;
-                mySizeCalculation = mySize * (EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - myMainPosition);  // try -1 t0 see if last is zero
+                mySizeCalculation = mySize * (EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - myMainPosition); // -1);  // try -1 to see if last is zero
                 memcpy(buffer+myMainPosition, doubleBuffer, mySizeCalculation ); 
                 myMainPosition = 0;
                // it should really also send a classification then except that is on another thread
              }  
           } else {
-                doubleBuffer[myDoublePosition] = myCounter;
+                 if (APDS.proximityAvailable()){
+                     proximity = 240 +(APDS.readProximity()*-1); 
+                     myCounter +=1;  // just testing if the doubleBuffer gets updated
+                 } 
+                 // update the value using the old value if a new reading is not available!
+                 doubleBuffer[myDoublePosition] = proximity * 1.0f; //myCounter;  
             }
         // Determine the next tick (and then sleep later)
         uint64_t next_tick = micros() + (EI_CLASSIFIER_INTERVAL_MS * 1000);
