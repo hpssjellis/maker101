@@ -24,13 +24,21 @@
 //This is your RAW regression model made using EdgeImpulse.com
 #include <ei-proximity-v04_inferencing.h>
 //#include <Arduino_LSM9DS1.h>
-
 #include <Arduino_APDS9960.h>
 /* Constant defines -------------------------------------------------------- */
 //#define CONVERT_G_TO_MS2    9.80665f
 //#define MAX_ACCEPTED_RANGE  2.0f        // starting 03/2022, models are generated setting range to +-2, but this example use Arudino library which set range to +-4g. If you are using an older model, ignore this value and use 4.0f instead
 #define MAX_ACCEPTED_RANGE  255.0f       
 
+// force a slice width by setting a specific value
+#define EI_SLICE EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE/EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW
+//#define EI_SLICE 5  // this was just for testing
+
+
+
+int myDoublePosition = -1;
+int myMainPosition;
+long myCounter =0;
 int proximity, gesture, colourR, colourG, colourB;
 
 /*
@@ -50,10 +58,11 @@ int proximity, gesture, colourR, colourG, colourB;
 
 /* Private variables ------------------------------------------------------- */
 static bool debug_nn = true;  //false; // Set this to true to see e.g. features generated from the raw signal
-static uint32_t run_inference_every_ms = 2000;
+static uint32_t run_inference_every_ms = 200;
 static rtos::Thread inference_thread(osPriorityLow);
 static float buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE] = { 0 };
 static float inference_buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];
+static float doubleBuffer[EI_SLICE] = { 1, 2, 3 };
 
 /* Forward declaration */
 void run_inference_background();
@@ -67,12 +76,7 @@ void setup()
     Serial.begin(115200);
     Serial.println("Edge Impulse Inferencing Demo");
 
-  /* Set sensitivity from 0 to 100. Higher is more sensitive. In
-   * my experience it requires quite a bit of experimentation to
-   * get this right, as if it is too sensitive gestures will always
-   * register as GESTURE_DOWN or GESTURE_UP and never GESTURE_LEFT or
-   * GESTURE_RIGHT. This can be called before APDS.begin() as it just
-   * sets an internal sensitivity value.*/
+
   APDS.setGestureSensitivity(70);  // 0 to 100
   if (!APDS.begin())
   {
@@ -82,8 +86,9 @@ void setup()
   }
   /* As per Arduino_APDS9960.h, 0=100%, 1=150%, 2=200%, 3=300%. Obviously more
    * boost results in more power consumption. */
-  APDS.setLEDBoost(0);   
-
+  APDS.setLEDBoost(3);    
+    
+   
 
     inference_thread.start(mbed::callback(&run_inference_background));
 }
@@ -112,6 +117,9 @@ void run_inference_background()
     ei_classifier_smooth_init(&smooth, 10 /* no. of readings */, 7 /* min. readings the same */, 0.8 /* min. confidence */, 0.3 /* max anomaly */);
 
     while (1) {
+
+
+      
         // copy the buffer
         memcpy(inference_buffer, buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE * sizeof(float));
 
@@ -141,6 +149,7 @@ void run_inference_background()
         // ei_classifier_smooth_update yields the predicted label
         const char *prediction = ei_classifier_smooth_update(&smooth, &result);
         ei_printf("%s ", prediction);
+        ei_printf("frame size %i", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
         // print the cumulative results
         ei_printf(" [ ");
         for (size_t ix = 0; ix < smooth.count_size; ix++) {
@@ -168,12 +177,48 @@ void run_inference_background()
 void loop()
 {
     while (1) {
+
+          myCounter +=1;  // just testing if doubleBuffer gets updated
+          myDoublePosition +=1;
+          // If double Buffer finished then update buffer
+          if (myDoublePosition > EI_SLICE) { 
+             myDoublePosition = -1;
+             memcpy(buffer+myMainPosition, doubleBuffer, sizeof(doubleBuffer) ); 
+             myMainPosition += EI_SLICE-1;
+             if (myMainPosition > (EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - EI_SLICE) ) {  
+                myMainPosition = 0;
+               // it should really also send a classification then except that is on another thread
+             }  
+          } else {
+                doubleBuffer[myDoublePosition] = myCounter;
+            }
         // Determine the next tick (and then sleep later)
         uint64_t next_tick = micros() + (EI_CLASSIFIER_INTERVAL_MS * 1000);
 
         // roll the buffer -3 points so we can overwrite the last one
       //  numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -3);
+      //  numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -1);
+
+
+   // numpy::roll(doubleBuffer, EI_SLICE, -1);
+   
+    //doubleBuffer[EI_SLICE - 1] = myCounter;
+
+
+
+
+
+
+
+
+
+
+
+/*
+      
         numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -1);
+
+
 
         // read to the end of the buffer
      if (APDS.proximityAvailable()){
@@ -193,6 +238,10 @@ void loop()
             }
        // }
 
+
+*/
+
+
        // buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 3] *= CONVERT_G_TO_MS2;
        // buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 2] *= CONVERT_G_TO_MS2;
       //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = proximity;
@@ -204,7 +253,7 @@ void loop()
     }
 }
 
-
+/*
 void ei_printf(const char *format, ...) {
     static char print_buf[1024] = { 0 };
 
@@ -217,3 +266,5 @@ void ei_printf(const char *format, ...) {
         Serial.write(print_buf);
     }
 }
+
+*/
