@@ -1,5 +1,7 @@
 /* Edge Impulse Arduino examples
  * Copyright (c) 2021 EdgeImpulse Inc.
+ * Updated July 24, 2022
+ * By Jeremy Ellis Twitter @rocksetta
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -220,56 +222,6 @@ void loop()
         // Determine the next tick (and then sleep later)
         uint64_t next_tick = micros() + (EI_CLASSIFIER_INTERVAL_MS * 1000);
 
-        // roll the buffer -3 points so we can overwrite the last one
-      //  numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -3);
-      //  numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -1);
-
-
-   // numpy::roll(doubleBuffer, EI_SLICE, -1);
-   
-    //doubleBuffer[EI_SLICE - 1] = myCounter;
-
-
-
-
-
-
-
-
-
-
-
-/*
-      
-        numpy::roll(buffer, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, -1);
-
-
-
-        // read to the end of the buffer
-     if (APDS.proximityAvailable()){
-              proximity = 240 +(APDS.readProximity()*-1); 
-     }
-          //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 3],
-          //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 2],
-            buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = proximity * 1.0f;
-       // );
-
-       // for (int i = 0; i < 3; i++) {
-       // for (int i = 0; i < 1; i++) {  
-
-            // hmmm, is this needed for raw data from other sensors?
-            if (fabs(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1]) > MAX_ACCEPTED_RANGE) {
-                buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = ei_get_sign(buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE -1]) * MAX_ACCEPTED_RANGE;
-            }
-       // }
-
-
-*/
-
-
-       // buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 3] *= CONVERT_G_TO_MS2;
-       // buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 2] *= CONVERT_G_TO_MS2;
-      //  buffer[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE - 1] = proximity;
 
         // and wait for next tick
         uint64_t time_to_wait = next_tick - micros();
