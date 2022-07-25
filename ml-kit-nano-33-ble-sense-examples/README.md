@@ -35,7 +35,7 @@ Just a fun plotter program showing all the Senses on the Nano33BleSense, for whi
 
 3. [a03a-color-data-forwarder.ino](a03a-color-data-forwarder.ino)   
   [a03b-color-as-raw-sensor.ino](a03b-color-as-raw-sensor.ino)     
-  same as the accelerometer above but this time using raw color RGB data. Makes the transition to any 3 raw sensors.
+ Same as the accelerometer above but this time using raw color RGB data. Makes the transition to any 3 raw sensors.
 
 
 4. [a04a-one-sensor-proximity-data-forwarder.ino](a04a-one-sensor-proximity-data-forwarder.ino)  
