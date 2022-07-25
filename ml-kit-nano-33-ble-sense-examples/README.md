@@ -54,7 +54,7 @@ Then the classification gets more complex. a04b is regular,  a04c is continuous 
 
 
 
-[z05-double-buffer-testing.ino](z05-double-buffer-testing.ino)
+[z01-double-buffer-testing.ino](z01-double-buffer-testing.ino)
 This is just a testing of how to do a double buffer. I put a counter into the code so I could see the numbers going up one at a time. Also highlighted the 
 issue of the last few values for a main buffer that was not fully divisable by the smaller buffer.
 
