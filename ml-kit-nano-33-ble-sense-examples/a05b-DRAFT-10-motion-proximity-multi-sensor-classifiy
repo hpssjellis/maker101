@@ -154,7 +154,7 @@ void loop() {
     Serial.print(String(magneticX, 2) + ","+String(magneticY, 2) + ","+String(magneticZ, 2) + ",");  
 
     // fill all features
-    features[feature_ix++] = proximity * 1.0f  // make it a float from an int
+    features[feature_ix++] = proximity * 1.0f;  // make it a float from an int
 
     features[feature_ix++] =  accelerometerX;
     features[feature_ix++] =  accelerometerY;
