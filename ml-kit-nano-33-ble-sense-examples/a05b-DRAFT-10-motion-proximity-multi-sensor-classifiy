@@ -1,3 +1,5 @@
+
+
 * Edge Impulse Arduino examples
  * Copyright (c) 2021 EdgeImpulse Inc.
  *
@@ -31,15 +33,22 @@
 /* For APDS9960 Gesture, light, and proximity sensor */
 #include <Arduino_APDS9960.h>
 
-//#include <Arduino_LSM9DS1.h>
 
-//#define CONVERT_G_TO_MS2    9.80665f
+#include <Arduino_LSM9DS1.h>
+
+#define CONVERT_G_TO_MS2    9.80665f
 #define FREQUENCY_HZ        EI_CLASSIFIER_FREQUENCY
 #define INTERVAL_MS         (1000 / (FREQUENCY_HZ + 1))
 
 
 int proximity, gesture, colourR, colourG, colourB;
 
+/* variables to hold LSM9DS1 accelerometer data */
+float accelerometerX, accelerometerY, accelerometerZ;
+/* variables to hold LSM9DS1 gyroscope data */
+float gyroscopeX, gyroscopeY, gyroscopeZ;
+/* variables to hold LSM9DS1 magnetic data */
+float magneticX, magneticY, magneticZ;
 
 static unsigned long last_interval_ms = 0;
 // to classify 1 frame of data you need EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE values
@@ -47,14 +56,26 @@ float features[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];
 // keep track of where we are in the feature array
 size_t feature_ix = 0;
 
+
+
+
+
 void setup() {
     Serial.begin(115200);
     Serial.println("Started");
 
-  //  if (!IMU.begin()) {
-  //      Serial.println("Failed to initialize IMU!");
-  //      while (1);
-  //  }
+
+      
+  /* IMU setup for LSM9DS1*/
+  /* default setup has all sensors active in continous mode. Sample rates
+   *  are as follows: magneticFieldSampleRate = 20Hz, gyroscopeYroscopeSampleRate = 109Hz,
+   * accelerationSampleRate = 109Hz */
+  if (!IMU.begin())
+  {
+    Serial.println("Failed to initialize IMU!");
+    /* Hacky way of stopping program executation in event of failure. */
+    while(1);
+  }
     
 
   /* Set sensitivity from 0 to 100. Higher is more sensitive. In
@@ -83,11 +104,80 @@ void loop() {
     if (millis() > last_interval_ms + INTERVAL_MS) {
      last_interval_ms = millis();
 
-     if ( APDS.colorAvailable()) {
+
+
+
+
+   if (APDS.proximityAvailable()){
+      proximity = 240 +(APDS.readProximity()*-1);  
+   }
+   
+ /* If new acceleration data is available on the LSM9DS1 get the data.*/
+  if(IMU.accelerationAvailable())
+  {
+    IMU.readAcceleration(accelerometerX, accelerometerY, accelerometerZ);
+    accelerometerX = 9.8 * accelerometerX;   // acceleration to Force F = gA = 9.8 *a
+    accelerometerY = 9.8 * accelerometerY;  
+    accelerometerZ = 9.8 * accelerometerZ;  
+  }
+  
+  /* If new gyroscope data is available on the LSM9DS1 get the data.*/
+  if(IMU.gyroscopeAvailable())
+  {
+    IMU.readGyroscope(gyroscopeX, gyroscopeY, gyroscopeZ);
+    gyroscopeX = 1.0 *gyroscopeX; 
+    gyroscopeY = 1.0 *gyroscopeY; 
+    gyroscopeZ = 1.0 *gyroscopeZ; 
+  }
+  
+  /* If new magnetic data is available on the LSM9DS1 get the data.*/
+  if (IMU.magneticFieldAvailable())
+  {
+    IMU.readMagneticField(magneticX, magneticY, magneticZ);
+    magneticX = 1.0 * magneticX; 
+    magneticY = 1.0 * magneticY; 
+    magneticZ = 1.0 * magneticZ; 
+  }
+       
+
+    // Print to uploader the new or the old data.
+    // Proximity first        
+    Serial.print(String(proximity) + ".00,");  // to format like a float, probably not needed
+
+    // Serial.printf("%f,%f,%f,", accelerometerX, accelerometerY, accelerometerZ);
+    Serial.print(String(accelerometerX, 2) + ","+String(accelerometerY, 2) + ","+String(accelerometerZ, 2) + ","); 
+     
+    // Serial.printf("%f,%f,%f,", gyroscopeX, gyroscopeY, gyroscopeZ);
+    Serial.print(String(gyroscopeX, 2) + ","+String(gyroscopeY, 2) + ","+String(gyroscopeZ, 2) + ","); 
+     
+    // Serial.printf("%f,%f,%f,", magneticX, magneticY, magneticZ);
+    Serial.print(String(magneticX, 2) + ","+String(magneticY, 2) + ","+String(magneticZ, 2) + ",");  
+
+    // fill all features
+    features[feature_ix++] = proximity * 1.0f  // make it a float from an int
+
+    features[feature_ix++] =  accelerometerX;
+    features[feature_ix++] =  accelerometerY;
+    features[feature_ix++] =  accelerometerZ;
+    
+    features[feature_ix++] =  gyroscopeX;
+    features[feature_ix++] =  gyroscopeY;
+    features[feature_ix++] =  gyroscopeZ;
+    
+    features[feature_ix++] =  magneticX;
+    features[feature_ix++] =  magneticY;
+    features[feature_ix++] =  magneticZ;
+
+
+
+
+     
+
+     //if ( APDS.colorAvailable()) {
        // read sensor data in exactly the same way as in the Data Forwarder example
        // IMU.readAcceleration(x, y, z);
        //  Serial.print(String(proximity) + ","+String(gesture) + ","+String(colourR) + ","+String(colourG) + ","+String(colourB) + ","); 
-       APDS.readColor(colourR, colourG, colourB);
+      // APDS.readColor(colourR, colourG, colourB);
   
         // fill the features buffer
         features[feature_ix++] = colourR * 1.0;  // to make it into a float
@@ -122,7 +212,7 @@ void loop() {
             // reset features frame
             feature_ix = 0;
         }
-    }
+    //}  // wasw old way
   }
 }
 
