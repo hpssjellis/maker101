@@ -50,10 +50,8 @@ Then the classification gets more complex. a04b is regular,  a04c is continuous 
 5. Latest work 
 July 28, 2022
 [a05a-10-motion-proximity-multi-sensor-data-forwarder.ino](a05a-10-motion-proximity-multi-sensor-data-forwarder.ino) Now prepping for the 
-data forwarder to take 10 samples of raw data. this time proximity, 3 acceleration, 3 Gyrocope, 3 magnetic. 10 total.
-
-[a05b-10-motion-proximity-multi-sensor-data-forwarder.ino](a05b-10-motion-proximity-multi-sensor-data-forwarder.ino) Presently in DRAFT mode, but this is the basic classification after an edgeimpulse.com model has been made with the above data forwarder. This is just a simple test to see if it works. Nice thing with this is the code is reasonably easy to work with.
-
+data forwarder to take 10 samples of raw data. this time proximity, 3 acceleration, 3 Gyrocope, 3 magnetic. 10 total.    
+[a05b-10-motion-proximity-multi-sensor-data-forwarder.ino](a05b-10-motion-proximity-multi-sensor-data-forwarder.ino) Presently in DRAFT mode, but this is the basic classification after an edgeimpulse.com model has been made with the above data forwarder. This is just a simple test to see if it works. Nice thing with this is the code is reasonably easy to work with.    
 I am much more interested in the continuous abilitiy which I will work on next.
 
 
