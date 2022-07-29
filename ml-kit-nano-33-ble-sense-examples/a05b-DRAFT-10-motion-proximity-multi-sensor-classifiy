@@ -142,16 +142,16 @@ void loop() {
 
     // Print to uploader the new or the old data.
     // Proximity first        
-    Serial.print(String(proximity) + ".00,");  // to format like a float, probably not needed
+   // Serial.print(String(proximity) + ".00,");  // to format like a float, probably not needed
 
     // Serial.printf("%f,%f,%f,", accelerometerX, accelerometerY, accelerometerZ);
-    Serial.print(String(accelerometerX, 2) + ","+String(accelerometerY, 2) + ","+String(accelerometerZ, 2) + ","); 
+ //   Serial.print(String(accelerometerX, 2) + ","+String(accelerometerY, 2) + ","+String(accelerometerZ, 2) + ","); 
      
     // Serial.printf("%f,%f,%f,", gyroscopeX, gyroscopeY, gyroscopeZ);
-    Serial.print(String(gyroscopeX, 2) + ","+String(gyroscopeY, 2) + ","+String(gyroscopeZ, 2) + ","); 
+  //  Serial.print(String(gyroscopeX, 2) + ","+String(gyroscopeY, 2) + ","+String(gyroscopeZ, 2) + ","); 
      
     // Serial.printf("%f,%f,%f,", magneticX, magneticY, magneticZ);
-    Serial.print(String(magneticX, 2) + ","+String(magneticY, 2) + ","+String(magneticZ, 2) + ",");  
+   // Serial.print(String(magneticX, 2) + ","+String(magneticY, 2) + ","+String(magneticZ, 2) + ",");  
 
     // fill all features
     features[feature_ix++] = proximity * 1.0f;  // make it a float from an int
@@ -193,7 +193,7 @@ void loop() {
             numpy::signal_from_buffer(features, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, &signal);
 
             // run classifier
-            EI_IMPULSE_ERROR res = run_classifier(&signal, &result, false);
+            EI_IMPULSE_ERROR res = run_classifier(&signal, &result, false);   // false = no debug infor printed
             ei_printf("run_classifier returned: %d\n", res);
             if (res != 0) return;
 
