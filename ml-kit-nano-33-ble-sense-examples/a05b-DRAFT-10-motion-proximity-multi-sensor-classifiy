@@ -25,7 +25,7 @@
 /* Includes ---------------------------------------------------------------- */
 
 //This is your RAW mdel made using EdgeImpulse.com
-#include <ei-test2-sensors_inferencing.h>
+#include <ei-rocksetta-10-multi-motion-proximity_inferencing.h>
 
 
 
