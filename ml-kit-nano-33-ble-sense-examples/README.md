@@ -55,7 +55,8 @@ data forwarder to take 10 samples of raw data. this time proximity, 3 accelerati
 I am much more interested in the continuous abilitiy which I will work on next.
 
 
-
+# As this is going well I am going to take a break and do some of the other projects for this repository.  
+All that needs to be done is more examples with more working code.
 
 
 [z01-double-buffer-testing.ino](z01-double-buffer-testing.ino)
