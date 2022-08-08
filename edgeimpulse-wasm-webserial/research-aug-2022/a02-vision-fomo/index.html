@@ -290,7 +290,8 @@ const myPictureNow  = async function(){
 
     
     //mySendIt('a')
-    if (results.results[i].label == "6") {mySendIt('a');} else {mySendIt('b');}
+    if (results.results[i].label == "6") {mySendIt('b');}    // LED on or off
+    if (results.results[i].label == "2") {mySendIt('a');}    // LED on or off
     
     if (myBestClassificationNumber == i){   // check if this is the best one
       
