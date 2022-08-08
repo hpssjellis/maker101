@@ -1,5 +1,9 @@
 Lets's try some basic WASM to weberial.
 
+Reminder WebSerial polyfil [here](https://hpssjellis.github.io/my-examples-of-arduino-webUSB-webSerial/public/webserial-and-polyfill.html)
+
+EdgeImpulse WASM examples [here](https://hpssjellis.github.io/my-examples-of-edge-impulse/public/index.html)
+
 Any arduino will need some code loaded. For now we are just blinking the LED, which would be similar to
 
 ```
