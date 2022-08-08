@@ -1,4 +1,4 @@
-<h6> Version 0.1.1-15   </h6>
+<h6> Version 0.1.2-16   </h6>
 
 <h1 align=center>Both WebSerial and Web-Serial-Polyfill</h1>
 
@@ -440,6 +440,7 @@ const myPictureNow  = async function(){
     
   for (let i = 0;  i < results.results.length; i++){  
     if (myBestClassificationNumber == i){   // check if this is the best one
+      mySendIt('a');  // webSerial turn on LED
         if (! document.getElementById('myCheckbox02sounds').checked){
           
            if (! document.getElementById('myCheckbox03lable0').checked){         
@@ -457,6 +458,7 @@ const myPictureNow  = async function(){
       
            myTemp += '<tr><td>'+ results.results[i].label + '</td><td><font style=\'color:yellow; background-color:blue;\'>' + results.results[i].value.toFixed(3) +'</font></td></tr>'            
         } else {
+           mySendIt('b')  // webSerial turn off LED
            myTemp += '<tr><td>'+ results.results[i].label + '</td><td>' + results.results[i].value.toFixed(3) +'</td></tr>'
         }
    }  
