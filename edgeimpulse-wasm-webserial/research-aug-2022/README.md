@@ -6,6 +6,26 @@ EdgeImpulse WASM examples [here](https://hpssjellis.github.io/my-examples-of-edg
 
 Any arduino will need some code loaded. For now we are just blinking the LED, which would be similar to
 
+1. Vision Classification to LED blink demo [here](https://hpssjellis.github.io/maker101/edgeimpulse-wasm-webserial/research-aug-2022/a01-vision-classify/index.html) So this works but is fairly slow on Android and is really messy. The coding is not clear but it does work. The Nano33Ble sense LED goes on.
+
+2. Vision FOMO demo [here]()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The basic starting Arduiino code is here
+
+
 ```
 /*
  * webSerial for testing javascript connection with an arduino
@@ -79,7 +99,6 @@ void loop() {
 
 ```
 
-1. Vision Classification to LED blink demo [here](https://hpssjellis.github.io/maker101/edgeimpulse-wasm-webserial/research-aug-2022/a01-vision-classify/index.html)
 
 
 
